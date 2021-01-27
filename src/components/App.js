@@ -40,16 +40,17 @@ class App extends React.Component {
 
   getcallbackValueNext = () => {
     let newpage = this.state.page + 1;
-    let actualterm = this.state.currentTerm;
-    this.setState({ page: this.state.page + 1, term: this.state.currentTerm });
-    this.onSearchSubmit(actualterm, newpage);
+    this.setState({
+      page: this.state.page + 1,
+      term: this.state.currentTerm
+    });
+    this.onSearchSubmit(this.state.currentTerm, newpage);
   };
 
   getcallbackValueBack = () => {
     let newpage = this.state.page - 1;
-    let actualterm = this.state.currentTerm;
     this.setState({ page: this.state.page - 1, term: this.state.currentTerm });
-    this.onSearchSubmit(actualterm, newpage);
+    this.onSearchSubmit(this.state.currentTerm, newpage);
   };
 
   render() {
