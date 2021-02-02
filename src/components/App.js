@@ -4,67 +4,57 @@ import SearchBar from "./SearchBar";
 import ImageList from "./ImageList";
 import Paginator from "./Paginator";
 
+const resultsPerPage = 9;
+
 class App extends React.Component {
   state = {
     images: [],
-    page: 1,
-    currentTerm: "",
-    totalPages: 0
+    currentPage: 1,
+    totalPages: 1
   };
+  currentTerm = "";
 
-  onSearchSubmit = async (term, page) => {
-    if (this.state.currentTerm !== term) {
-      this.setState({ currentTerm: term, page: 1 });
-    }
-    //https://unsplash.com/documentation#search-photos
+  onSearchSubmit = async (term, page = 1) => {
     const resp = await unsplash.get("/search/photos", {
-      params: { query: term, page }
+      params: { query: term, page: page, per_page: resultsPerPage }
     });
-
+    this.currentTerm = term;
     this.setState({
       images: resp.data.results,
+      currentPage: page,
       totalPages: resp.data.total_pages
     });
   };
 
-  isEmpty() {
-    if (this.state.images.length !== 0) return false;
-    else return true;
-  }
-  isFirstPage() {
-    if (this.state.page === 1) return true;
-  }
-  isLastPage() {
-    if (this.state.page === this.state.totalPages) return true;
-  }
-
-  getcallbackValueNext = () => {
-    let newpage = this.state.page + 1;
-    this.setState({
-      page: this.state.page + 1,
-      term: this.state.currentTerm
-    });
-    this.onSearchSubmit(this.state.currentTerm, newpage);
+  onNextClicked = () => {
+    this.onSearchSubmit(this.currentTerm, this.state.currentPage + 1);
   };
 
-  getcallbackValueBack = () => {
-    let newpage = this.state.page - 1;
-    this.setState({ page: this.state.page - 1, term: this.state.currentTerm });
-    this.onSearchSubmit(this.state.currentTerm, newpage);
+  onPreviousClicked = () => {
+    this.onSearchSubmit(this.currentTerm, this.state.currentPage - 1);
   };
+
+  renderPaginator() {
+    if (this.state.images.length === 0) return "";
+
+    return (
+      <Paginator
+        enablePrevious={this.state.currentPage > 1}
+        enableNext={this.state.currentPage < this.state.totalPages}
+        onPrevious={this.onPreviousClicked}
+        onNext={this.onNextClicked}
+        style={{ margin: "10px" }}
+      />
+    );
+  }
 
   render() {
     return (
       <div className="ui container" style={{ marginTop: "10px" }}>
         <SearchBar onSubmit={this.onSearchSubmit} />
         <ImageList images={this.state.images} />
-        <Paginator
-          isEmpty={this.isEmpty()}
-          isFirstPage={this.isFirstPage()}
-          isLastPage={this.isLastPage()}
-          callbackValueNext={() => this.getcallbackValueNext()}
-          callbackValueBack={() => this.getcallbackValueBack()}
-        />
+        <br />
+        {this.renderPaginator()}
       </div>
     );
   }
