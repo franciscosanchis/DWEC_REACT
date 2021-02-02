@@ -1,5 +1,10 @@
 import React from "react";
 
+/**
+ * El paginador lo creremos como una función de tipoFlecha y como parámetros recibirá los métodos que le pasamos
+ * en el componente padre. Los botones comprobarán si pueden o no activarse dependiendo del dato que reciban desde el padre.
+ * Así mismo, llevarán la función onClick que ejecutará la función del elemento Padre que reciben por parámetro.
+ */
 const Paginator = ({ enablePrevious, enableNext, onPrevious, onNext }) => {
   return (
     <div className="ui buttons page grid">
